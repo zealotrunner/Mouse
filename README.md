@@ -1,15 +1,14 @@
 # Mouse
-
-Mouse providers an interface that represents the mouse itself as an object with state. `window.Mouse` points to the constructor. Only one instance of `Mouse` should exist per `window`. `window.mouse` points to a context's single mouse instance.
+Mouse provides an interface that represents the mouse itself as an object with state. This allows you to reverse the normal approach of binding to specific elements. New events for 'grab', 'drag', and 'drop' are also provided, as well as binding and tracking of multiple button states.
 
 # 30 second example
+`window.Mouse` points to the constructor, `window.mouse` points to the mouse instance.
+
 The follow is an example of a right mouse button drag+drop that works for everything on the page. This shows the power of binding events to the mouse itself, allowing one set of handlers to work with *everything*.
 
 ```javascript
 (function moveAnything(){
   var style, x, y;
-
-  // window.mouse is automatically initialized for you
 
   mouse.on('down', 'right', function(e){
     // prevent default text selection
@@ -25,8 +24,9 @@ The follow is an example of a right mouse button drag+drop that works for everyt
     x = (parseFloat(computed.left) || 0) - this.x;
     y = (parseFloat(computed.top) || 0) - this.y;
 
-    if (computed.position === 'static')
+    if (computed.position === 'static') {
       style.position = 'relative';
+    }
   });
 
   mouse.on('drag', 'right', function(e){
@@ -44,29 +44,28 @@ The follow is an example of a right mouse button drag+drop that works for everyt
 ```
 
 # Event Handling
-
-`window.mouse` (just `mouse` from now on) provides existing mouse methods as well as normalizes some and adds new ones.
+`window.mouse` provides existing mouse events as well as normalizing some and adding new ones.
 
 * __down__: mousedown
 * __up__: mouseup
 * __move__: mousemove
 * __click__: click and contextmenu
-* __dblclick__: dbleclick
-* __leave__: Uses mouseout but only fires when the mouse leaves the window entirely
-* __enter__: Uses mouseover but only fires when the mouse enters the window from outside
+* __dblclick__: dblclick
+* __leave__: when the mouse leaves the window entirely
+* __enter__: when the mouse enters the window from outside
 * __wheel__: mousewheel and wheel events
-* __grab__: first move after a button is press and held
+* __grab__: first move after a button is pressed and held
 * __drag__: while any button is held and dragged, each move event becomes both a move and a drag event
 * __drop__: first button release after grab + drag
 
 # API
-The following functions are provided to allow management of listeners. `types` is a string of type names separated by spaces for multiple events. `buttons` is an optional parameter that will pre-filter what events you're notified of. Buttons can be one of:
+The following functions are provided to allow management of listeners. `types` is a string of event names separated by spaces for multiple events. `buttons` is an optional parameter that will pre-filter what events you're notified of. Buttons can be one of:
 
 * string like "left" or "left+right"
 * a bitmask where `left === 1`, `middle === 2`, and `right === 4` (so left | right is 5)
 * an object like `{ left: true, right: true }`.
 
-If button filter is omitted then the callback becomes the second param.
+If button filter is omitted then the callback becomes the second param and events aren't filtered.
 
 * __mouse.on(types, [buttons], callback)__: add callback as listener for each type in types
 * __mouse.off(types, [buttons], callback)__: remove callback from listeners for each type in types
@@ -76,7 +75,7 @@ If button filter is omitted then the callback becomes the second param.
 
 # Button handling
 
-Mouse button state is tracked and `MouseEvent.prototype` is augmented in two ways:
+Mouse button state is tracked MouseEvent instances are augmented in two ways:
 
-* __buttons__: a getter that returns the buttons as per the W3C spec (only first 3 buttons currently). That is logical combination of the button states. left is 1, middle is 2, right is 4. All through would be 7, etc.
+* __buttons__: The buttons as per the W3C spec (only first 3 buttons currently). That is logical combination of the button states. left is 1, middle is 2, right is 4. All through would be 7, etc.
 * __buttonStates__: is a frozen object that maps the bitmask out to an object, like `{ left: true/false, middle: true/false, right: true/false }`. Performance is maintained because there's only 8 variations so the same frozen objects are simply reused
