@@ -6,6 +6,8 @@ Mouse provides an interface that represents the mouse itself as an object with s
 
 The follow is an example of a right mouse button drag+drop that works for everything on the page. This shows the power of binding events to the mouse itself, allowing one set of handlers to work with *everything*.
 
+The following example can be seen in action packaged as a bookmarklet here: http://bbenvie.com/examples/drag-anything.html
+
 ```javascript
 (function moveAnything(){
   var style, x, y;
