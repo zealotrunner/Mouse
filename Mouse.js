@@ -134,8 +134,6 @@ void function(){
         self.emit(e);
       },
       contextmenu: function rightclick(e){
-        if (self.buttons !== 4 || self.dragging)
-          e.preventDefault();
         events.click(e);
       },
       mousemove: function move(e){
