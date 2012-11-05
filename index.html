@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mouse by Benvie</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Mouse</h1>
+        <p>an object that represents the mouse itself as an event source</p>
+        <p class="view"><a href="https://github.com/Benvie/Mouse">View the Project on GitHub <small>Benvie/Mouse</small></a></p>
+        <ul>
+          <li><a href="https://github.com/Benvie/Mouse/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Benvie/Mouse/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Benvie/Mouse">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Mouse</h1>
+
+<p>Mouse provides an interface that represents the mouse itself as an object with state. This allows you to reverse the normal approach of binding to specific elements. New events for 'grab', 'drag', and 'drop' are also provided, as well as binding and tracking of multiple button states.</p>
+
+<h1>30 second example</h1>
+
+<p><code>window.Mouse</code> points to the constructor, <code>window.mouse</code> points to the mouse instance.</p>
+
+<p>The follow is an example of a right mouse button drag+drop that works for everything on the page. This shows the power of binding events to the mouse itself, allowing one set of handlers to work with <em>everything</em>.</p>
+
+<p>The following example can be seen in action packaged as a bookmarklet here: <a href="http://bbenvie.com/examples/drag-anything.html">http://bbenvie.com/examples/drag-anything.html</a></p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="nx">moveAnything</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">style</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">;</span>
+
+  <span class="nx">mouse</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'down'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="c1">// prevent default text selection</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">mouse</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'grab'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="c1">// `e.target` is the element the mouse is acting on</span>
+    <span class="kd">var</span> <span class="nx">computed</span> <span class="o">=</span> <span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+    <span class="nx">style</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">style</span><span class="p">;</span>
+
+    <span class="c1">// `this` refers to the mouse itself</span>
+    <span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">computed</span><span class="p">.</span><span class="nx">left</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span>
+    <span class="nx">y</span> <span class="o">=</span> <span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">computed</span><span class="p">.</span><span class="nx">top</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">computed</span><span class="p">.</span><span class="nx">position</span> <span class="o">===</span> <span class="s1">'static'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">style</span><span class="p">.</span><span class="nx">position</span> <span class="o">=</span> <span class="s1">'relative'</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="nx">mouse</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'drag'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="c1">// update position</span>
+    <span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="nx">x</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'px'</span><span class="p">;</span>
+    <span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="nx">y</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'px'</span><span class="p">;</span>
+  <span class="p">});</span>
+
+  <span class="nx">mouse</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'drop'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="c1">// free reference and prevent context menu</span>
+    <span class="nx">style</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">})();</span>
+</pre></div>
+
+<h1>Event Handling</h1>
+
+<p><code>window.mouse</code> provides existing mouse events as well as normalizing some and adding new ones.</p>
+
+<ul>
+<li>
+<strong>down</strong>: mousedown</li>
+<li>
+<strong>up</strong>: mouseup</li>
+<li>
+<strong>move</strong>: mousemove</li>
+<li>
+<strong>click</strong>: click and contextmenu</li>
+<li>
+<strong>dblclick</strong>: dblclick</li>
+<li>
+<strong>leave</strong>: when the mouse leaves the window entirely</li>
+<li>
+<strong>enter</strong>: when the mouse enters the window from outside</li>
+<li>
+<strong>wheel</strong>: mousewheel and wheel events</li>
+<li>
+<strong>grab</strong>: first move after a button is pressed and held</li>
+<li>
+<strong>drag</strong>: while any button is held and dragged, each move event becomes both a move and a drag event</li>
+<li>
+<strong>drop</strong>: first button release after grab + drag</li>
+</ul><h1>API</h1>
+
+<p>The following functions are provided to allow management of listeners. <code>types</code> is a string of event names separated by spaces for multiple events. <code>buttons</code> is an optional parameter that will pre-filter what events you're notified of. Buttons can be one of:</p>
+
+<ul>
+<li>string like "left" or "left+right"</li>
+<li>a bitmask where <code>left === 1</code>, <code>middle === 2</code>, and <code>right === 4</code> (so left | right is 5)</li>
+<li>an object like <code>{ left: true, right: true }</code>.</li>
+</ul><p>If button filter is omitted then the callback becomes the second param and events aren't filtered.</p>
+
+<ul>
+<li>
+<strong>mouse.on(types, [buttons], callback)</strong>: add callback as listener for each type in types</li>
+<li>
+<strong>mouse.off(types, [buttons], callback)</strong>: remove callback from listeners for each type in types</li>
+<li>
+<strong>mouse.once(types, [buttons], callback)</strong>: add callback as listener for the first time each type in types fires, then removes it</li>
+<li>
+<strong>mouse.emit(evt)</strong>: takes MouseEvent object and runs the event through the callbacks the same as when a native event is received. Type is determined from the event object</li>
+<li>
+<strong>new Mouse(view)</strong>: initializes mouse instance for given view. This is done automatically for main window, but this could be run on, for example, an iframe's window to provide a mouse object scope to the iframe.</li>
+</ul><h1>Button handling</h1>
+
+<p>Mouse button state is tracked MouseEvent instances are augmented in two ways:</p>
+
+<ul>
+<li>
+<strong>buttons</strong>: The buttons as per the W3C spec (only first 3 buttons currently). That is logical combination of the button states. left is 1, middle is 2, right is 4. All through would be 7, etc.</li>
+<li>
+<strong>buttonStates</strong>: is a frozen object that maps the bitmask out to an object, like <code>{ left: true/false, middle: true/false, right: true/false }</code>. Performance is maintained because there's only 8 variations so the same frozen objects are simply reused</li>
+</ul>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/Benvie">Benvie</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
