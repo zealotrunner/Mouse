@@ -1,40 +1,44 @@
-/* mouse.js
+/*
+ * Mouse: Makes the mouse into a first class citizen.
  *
- * Provides a `Mouse` class, which in most cases there should only be a single of.
- * `mouse` is automatically instantiated on the window and tracks the mouse state independent of specific elements
- * This file also shims in missing behavior such as `buttons`
+ * Copyright (c) 2012 Brandon Benvie <http://bbenvie.com>
+ * Released under MIT license.
+ *
+ * Version: 0.0.3
  */
 
 void function(){
   // figure out what we're checking for scroll offsets
   var scroll = 'pageXOffset' in window
     ? { x: 'pageXOffset', y: 'pageYOffset' }
-    : { x: 'scrollX', y: 'scrollY' };
+    : { x: 'scrollX',     y: 'scrollY' };
 
   // strip 'mouse' from mouse events to avoid redundency
   var translate = {
-    down: 'down',
-    up: 'up',
-    move: 'move',
-    over: 'over',
-    out: 'out',
-    grab: 'grab',
-    drag: 'drag',
-    drop: 'drop',
-
-    click: 'click',
-    wheel: 'wheel',
+    click      : 'click',
     contextmenu: 'click',
-    dblclick: 'dblclick',
-    mousedown: 'down',
-    mouseup: 'up',
-    mousemove: 'move',
-    mouseover: 'over',
-    mouseout: 'out',
-    mousewheel: 'wheel',
+    dblclick   : 'dblclick',
+    down       : 'down',
+    drag       : 'drag',
+    drop       : 'drop',
+    grab       : 'grab',
+    mousedown  : 'down',
+    mousemove  : 'move',
+    mouseout   : 'out',
+    mouseover  : 'over',
+    mouseup    : 'up',
+    mousewheel : 'wheel',
+    move       : 'move',
+    out        : 'out',
+    over       : 'over',
+    up         : 'up',
+    wheel      : 'wheel'
   };
+  var allMouse = 'move over out down up wheel click dblclick grab drag drop';
 
-  var states = [], keybinds = Object.create(null);
+  var states = [],
+      keybinds = Object.create(null);
+
   void function(i, name){
     while (i--) {
       states[i] = Object.freeze({
@@ -43,9 +47,9 @@ void function(){
         right:  (i & 4) > 0
       });
       name = [];
-      states[i].left && name.push('left');
+      states[i].left   && name.push('left');
       states[i].middle && name.push('middle');
-      states[i].right && name.push('right');
+      states[i].right  && name.push('right');
       keybinds[name.join('+')] = i;
     }
   }(8);
@@ -53,15 +57,14 @@ void function(){
   function interpret(input){
     if (input == null) return 0;
     switch (typeof input) {
-      case 'number': return input < 8 ? input : 0;
-      case 'string': return input in keybinds ? keybinds[input] : 0;
-      case 'boolean': return +input;
+      case 'number'  : return input < 8 ? input : 0;
+      case 'string'  : return input in keybinds ? keybinds[input] : 0;
+      case 'boolean' : return +input;
       case 'function':
-      case 'object': return (input.left ? 1 : 0) | (input.middle ? 2 : 0) | (input.right ? 4 : 0);
+      case 'object'  : return (input.left ? 1 : 0) | (input.middle ? 2 : 0) | (input.right ? 4 : 0);
     }
   }
 
-  var allMouse = 'move over out down up wheel click dblclick grab drag drop';
 
   function listen(view, handlers){
     for (var k in handlers)
