@@ -1,0 +1,8 @@
+{
+  "name": "mouse",
+  "version": "0.0.1",
+  "main": "Mouse.js",
+  "ignore": [],
+  "author": "Brandon Benvie",
+  "license": "MIT"
+}
